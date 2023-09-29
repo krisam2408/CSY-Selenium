@@ -1,7 +1,7 @@
 # CSY-Selenium
  Pruebas automatizadas usando Selenium para ramo de Calidad
 
- Para ejecutarse requiere el SDK de .NET Core 6, que puede ser descargado desde https://dotnet.microsoft.com/en-us/download/visual-studio-sdks
+ Para ejecutarse requiere el SDK de <b>.NET Core 6</b>, que puede ser descargado desde https://dotnet.microsoft.com/en-us/download/visual-studio-sdks
 
  Recomiendo tener la extensión de Visual Studio Code 'C#' instalada.
 
