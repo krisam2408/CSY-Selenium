@@ -12,7 +12,7 @@ MainTask[] tasks = new MainTask[]
     new Mercadolibre_SearchProductArduino_ListProducts(driver),
     new Mercadolibre_BuyProductXiaomi_RedirectToBuy(driver),
     new Mercadolibre_BuyProductXiaomi_RedirectToLogin(driver),
-  
+    new Mercadolibre_AddProductXiaomiRedmiToCart_RedirectToProductAdded(driver),
 };
 
 ConsoleTerminal terminal = ConsoleTerminal.CreateTerminal(tasks);
