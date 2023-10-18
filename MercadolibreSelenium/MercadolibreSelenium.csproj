@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TerminalWrapper\TerminalWrapper.csproj" />
+    <ProjectReference Include="D:\PersonalData\Utilities\Aide\Aide.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,7 +9,9 @@ IWebDriver driver = new ChromeDriver();
 MainTask[] tasks = new MainTask[]
 {
     new Mercadolibre_Navigate(driver),
-    new Mercadolibre_SearchProductArduino_ListProducts(driver)
+    new Mercadolibre_SearchProductArduino_ListProducts(driver),
+    new Mercadolibre_BuyProductXiaomi_RedirectToBuy(driver),
+    new Mercadolibre_BuyProductXiaomi_RedirectToLogin(driver),
   
 };
 
