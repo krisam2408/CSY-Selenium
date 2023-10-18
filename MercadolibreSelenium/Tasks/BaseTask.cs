@@ -1,12 +1,11 @@
-using System.Diagnostics.CodeAnalysis;
 using OpenQA.Selenium;
-using OpenQA.Selenium.DevTools.V115.Page;
 using TerminalWrapper;
 
 namespace MercadolibreSelenium.Tasks;
 
 public abstract class BaseTask : MainTask
 {
+    protected const string HostUrl = "https://www.mercadolibre.cl";
     protected IWebDriver Driver { get; private set; }
 
     protected abstract int TestId { get; }
@@ -16,6 +15,17 @@ public abstract class BaseTask : MainTask
     protected BaseTask(IWebDriver driver) : base()
     {
         Driver = driver;
+    }
+
+    protected virtual async Task<bool> Precondition()
+    {
+        await Terminal.WriteAsync("Precondiciones no pudieron ser completadas", TerminalColor.Red);
+        return false;
+    }
+
+    protected virtual async Task PostCondition()
+    {
+        await Terminal.WriteAsync("Postcondiciones no pudieron ser evaluadas", TerminalColor.Red);
     }
 
     protected async Task Assert(bool result)
@@ -61,26 +71,33 @@ public abstract class BaseTask : MainTask
                 await Terminal.WriteAsync("Pulse cualquier tecla para continuar");
                 await Terminal.PauseAsync();
             }
+
         }while(captcha != null && priorityCondition());
     }
 
-    protected bool CheckIfSignedOut(out IWebElement? loginLink)
+    /// <summary>
+    /// Checks if user is authenticated
+    /// </summary>
+    /// <param name="loginLink">Link to authentication view</param>
+    /// <returns>false if authenticated; true if not authenticated</returns>
+    protected bool CheckAuthentication(out IWebElement? loginLink)
     {
+        loginLink = null;
+
         Driver.Navigate()
-            .GoToUrl("https://www.mercadolibre.cl");
+            .GoToUrl(HostUrl);
 
         IWebElement[] links = Driver
             .FindElements(By.TagName("a"))
             .ToArray();
 
-        foreach(IWebElement a in links)
-            if(a.Text == "Ingresa")
+        foreach (IWebElement a in links)
+            if (a.Text == "Ingresa")
             {
                 loginLink = a;
                 return true;
             }
-      
-        loginLink = null;
+
         return false;
     }
 }
