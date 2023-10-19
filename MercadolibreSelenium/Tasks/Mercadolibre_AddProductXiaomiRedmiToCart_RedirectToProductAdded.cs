@@ -20,7 +20,18 @@ public sealed class Mercadolibre_AddProductXiaomiRedmiToCart_RedirectToProductAd
             return;
 
         IWebElement addToCartButton = Driver.FindElement(By.Id(":R9j9ahit7k:"));
-        addToCartButton.Click();
+
+        try
+        {
+            addToCartButton.Click();
+        }
+        catch (ElementClickInterceptedException ex)
+        {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)Driver;
+            js.ExecuteScript(@"document.getElementsByClassName('andes-modal__overlay--modal')[0].style.display = 'none';");
+
+            addToCartButton.Click();
+        }
 
         await PostCondition();
     }

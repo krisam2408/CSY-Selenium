@@ -19,7 +19,18 @@ public sealed class Mercadolibre_BuyProductXiaomi_RedirectToBuy : BaseTask
             return;
 
         IWebElement buyButton = Driver.FindElement(By.Id(":R9b9ahit7k:"));
-        buyButton.Click();
+
+        try
+        {
+            buyButton.Click();
+        }
+        catch (ElementClickInterceptedException ex)
+        {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)Driver;
+            js.ExecuteScript("document.getElementsByClassName('andes-modal__overlay--modal')[0].style.display = 'none';");
+
+            buyButton.Click();
+        }
 
         await PostCondition();
     }
