@@ -6,7 +6,7 @@ namespace MercadolibreSelenium.Tasks;
 
 public sealed class Mercadolibre_BuyProductXiaomi_RedirectToBuy : BaseTask
 {
-    protected override int TestId => 4;
+    protected override int TestId => 5;
     protected override string TestName => "Comprar Producto Xiaomi Redmi";
 
     private const string m_productName = "Xiaomi Redmi 12C";
@@ -75,6 +75,8 @@ public sealed class Mercadolibre_BuyProductXiaomi_RedirectToBuy : BaseTask
 
     protected override async Task PostCondition()
     {
+        await Task.Delay(3000);
+
         bool warranty = CheckWarrantyView();
         bool buy = CheckBuyView();
 

@@ -5,7 +5,7 @@ namespace MercadolibreSelenium.Tasks;
 
 public sealed class Mercadolibre_SearchProductArduino_ListProducts : BaseTask
 {
-    protected override int TestId => 3;
+    protected override int TestId => 1;
     protected override string TestName => "Buscar Producto Arduino";
 
     public Mercadolibre_SearchProductArduino_ListProducts(IWebDriver driver) : base(driver) { }

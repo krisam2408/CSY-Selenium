@@ -4,27 +4,41 @@ using TerminalWrapper;
 
 namespace MercadolibreSelenium.Tasks;
 
-public sealed class Mercadolibre_TakeProductFromCart_QuantityReduced : BaseTask
+public sealed class Mercadolibre_DeleteProductFromCart_PriceReduced : BaseTask
 {
-    protected override int TestId => 8;
-    protected override string TestName => "Quitar Producto de Carro";
+    protected override int TestId => 9;
+    protected override string TestName => "Eliminar Producto de Carro";
 
     private readonly string[] m_products = new string[] { "Xiaomi", "Samsung", "Huawei" };
-    private int m_quantity;
     private int m_price;
 
-    public Mercadolibre_TakeProductFromCart_QuantityReduced(IWebDriver driver) : base(driver) { }
+    public Mercadolibre_DeleteProductFromCart_PriceReduced(IWebDriver driver) : base(driver) { }
 
     public override async Task ExecuteAsync()
     {
         if (!await Precondition())
             return;
 
-        m_quantity = GetFirstItemQuantity();
         m_price = GetTotalSum();
 
-        IWebElement minusButton = Driver.FindElement(By.Id("full_item_row_1_quantity_selector-button-decrease"));
-        minusButton.Click();
+        IWebElement? deleteLink = Driver.FindElements(By.ClassName("link"))
+            .ToArray()
+            .FirstOrDefault(a => a.Text.Contains("Eliminar"));
+
+        if(deleteLink == null)
+        {
+            await Terminal.WriteAsync("No se pudo continuar con la prueba", TerminalColor.Red);
+            return;
+        }
+
+        try
+        {
+            deleteLink.Click();
+        }
+        catch(ElementClickInterceptedException ex)
+        {
+
+        }
 
         await Task.Delay(1000);
 
@@ -44,18 +58,12 @@ public sealed class Mercadolibre_TakeProductFromCart_QuantityReduced : BaseTask
         return null;
     }
 
-    private int GetFirstItemQuantity()
-    {
-        IWebElement quantityInput = Driver.FindElement(By.Id("full_item_row_1_quantity_selector-textfield"));
-        string quantity = quantityInput.GetAttribute("value");
-        return int.Parse(quantity);
-    }
-
     private int GetTotalSum()
     {
         IWebElement priceText = Driver.FindElements(By.ClassName("bf-ui-price-small"))
             .ToArray()
             .Last();
+
         string price = priceText.Text.Replace(".", "");
         return int.Parse(price);
     }
@@ -64,10 +72,15 @@ public sealed class Mercadolibre_TakeProductFromCart_QuantityReduced : BaseTask
     {
         bool authenticated = !CheckAuthentication(out IWebElement? link);
         bool productsInCart = await CheckProductsInCart();
-        bool moreThanOneProduct = await CheckMoreThanOneProduct();
 
-        if (AideBool.AndCheck(authenticated, productsInCart, moreThanOneProduct))
+        if (AideBool.AndCheck(authenticated, productsInCart))
+        {
+            IWebElement cartLink = Driver.FindElement(By.Id("nav-cart"));
+            cartLink.Click();
+
+            await Task.Delay(1000);
             return true;
+        }
 
         if (!authenticated)
             await Terminal.WriteAsync("Sesión no iniciada", TerminalColor.Yellow);
@@ -125,31 +138,12 @@ public sealed class Mercadolibre_TakeProductFromCart_QuantityReduced : BaseTask
         await Task.Delay(3000);
     }
 
-    private async Task<bool> CheckMoreThanOneProduct()
-    {
-        IWebElement cartLink = Driver.FindElement(By.Id("nav-cart"));
-        cartLink.Click();
-
-        await Task.Delay(1000);
-
-        int firstItemQuantity = GetFirstItemQuantity();
-        if(firstItemQuantity == 1)
-        {
-            IWebElement plusButton = Driver.FindElement(By.Id("full_item_row_1_quantity_selector-button-increase"));
-            plusButton.Click();
-
-            await Task.Delay(1000);
-        }
-
-        return true;
-    }
-
     protected override async Task PostCondition()
     {
-        bool quantityDecreased = CheckQuantityDecrease();
         bool sumDecreased = CheckTotalSumDecrease();
+        bool noProductsInCart = CheckNoProducts();
 
-        if (AideBool.AndCheck(quantityDecreased, sumDecreased))
+        if (AideBool.OrCheck(sumDecreased, noProductsInCart))
         {
             await Assert(true);
             return;
@@ -158,19 +152,30 @@ public sealed class Mercadolibre_TakeProductFromCart_QuantityReduced : BaseTask
         await base.PostCondition();
     }
 
-    private bool CheckQuantityDecrease()
+    private bool CheckTotalSumDecrease()
     {
-        int quantity = GetFirstItemQuantity();
-        if (quantity < m_quantity)
+        int price;
+        try
+        {
+            price = GetTotalSum();
+        }
+        catch
+        {
+            return false;
+        }
+
+        if (price < m_price)
             return true;
 
         return false;
     }
 
-    private bool CheckTotalSumDecrease()
+    private bool CheckNoProducts()
     {
-        int price = GetTotalSum();
-        if (price < m_price)
+        IWebElement? empty = Driver.FindElements(By.Id("empty_state"))
+            .FirstOrDefault();
+
+        if(empty != null)
             return true;
 
         return false;

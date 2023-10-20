@@ -24,6 +24,7 @@ public abstract class Terminal
             await WriteAsync($"Exception \"{ex.GetType().FullName}\" found.", TerminalColor.Red);
             await WriteAsync(ex.Message, TerminalColor.Red);
             await WriteAsync("Shutting Terminal down", TerminalColor.Yellow);
+            await PauseAsync();
         }
         finally
         {

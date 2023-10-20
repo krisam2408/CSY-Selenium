@@ -3,6 +3,7 @@ using TerminalWrapper;
 
 namespace MercadolibreSelenium.Tasks;
 
+[Obsolete("Abandonado por complicaciones con seguridad en productivo")]
 public sealed class Mercadolibre_Register_SMSSent : BaseTask
 {
     protected override int TestId => 2;

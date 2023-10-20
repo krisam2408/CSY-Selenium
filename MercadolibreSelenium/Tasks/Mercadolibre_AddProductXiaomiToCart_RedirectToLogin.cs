@@ -4,21 +4,21 @@ using TerminalWrapper;
 
 namespace MercadolibreSelenium.Tasks;
 
-public sealed class Mercadolibre_BuyProductXiaomi_RedirectToLogin : BaseTask
+public sealed class Mercadolibre_AddProductXiaomiToCart_RedirectToLogin : BaseTask
 {
-    protected override int TestId => 3;
-    protected override string TestName => "Comprar Producto Xiaomi Redmi Sin Sesión Iniciada";
+    protected override int TestId => 4;
+    protected override string TestName => "Añadir Producto Xiaomi Redmi a Carro Sin Sesión Iniciada";
 
     private const string m_productName = "Xiaomi Redmi 12C";
 
-    public Mercadolibre_BuyProductXiaomi_RedirectToLogin(IWebDriver driver) : base(driver) { }
+    public Mercadolibre_AddProductXiaomiToCart_RedirectToLogin(IWebDriver driver) : base(driver) { }
 
     public override async Task ExecuteAsync()
     {
         if (!await Precondition())
             return;
 
-        IWebElement buyButton = Driver.FindElement(By.Id(":R9b9ahit7k:"));
+        IWebElement buyButton = Driver.FindElement(By.Id(":R9j9ahit7k:"));
 
         try
         {
@@ -75,7 +75,7 @@ public sealed class Mercadolibre_BuyProductXiaomi_RedirectToLogin : BaseTask
 
     protected override async Task PostCondition()
     {
-        bool loginRequired = CheckLoginRedirection();
+        bool loginRequired = await CheckLoginRedirection();
 
         if (loginRequired)
         {
@@ -86,13 +86,15 @@ public sealed class Mercadolibre_BuyProductXiaomi_RedirectToLogin : BaseTask
         await base.PostCondition();
     }
 
-    private bool CheckLoginRedirection()
+    private async Task<bool> CheckLoginRedirection()
     {
+        await Task.Delay(3000);
+
         IWebElement[] warningHeader = Driver.FindElements(By.ClassName("center-card__title"))
             .ToArray();
 
         foreach (IWebElement h in warningHeader)
-            if (h.Text.Contains("ingresa a tu cuenta"))
+            if (h.Text.ToLower().Contains("ingresa a tu cuenta"))
                 return true;
 
         return false;
